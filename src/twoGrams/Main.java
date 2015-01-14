@@ -27,7 +27,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(1000));
-		JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 8087);
+		JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 8060);
 		final PackingData pD = new PackingData();
 		JavaDStream<String> hash = lines.flatMap(
 				  new FlatMapFunction<String, String>() {
