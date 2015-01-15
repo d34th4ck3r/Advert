@@ -25,7 +25,7 @@ import scala.Tuple2;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
-		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
+		SparkConf conf = new SparkConf().setMaster("local").setAppName("NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(1000));
 		JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 8060);
 		final PackingData pD = new PackingData();
