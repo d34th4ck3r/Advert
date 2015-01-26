@@ -35,7 +35,6 @@ public class Main {
 					      
 					  }
 			});
-		hash.print();
 		
 		JavaPairDStream<String, ArrayList<String>> tuple = hash.mapToPair(
 				new PairFunction<String,String,ArrayList<String>>(){
@@ -46,7 +45,6 @@ public class Main {
 						arg0=StringUtils.trim(arg0);
 						arg0=StringUtils.removeStart(arg0, "{");
 				    	arg0=StringUtils.removeEnd(arg0, "}");
-				    	System.out.println("arg0: " + arg0);
 				    	String[] tuple = arg0.split(":");
 				    	tuple[0]=tuple[0].replace("\"","");
 				    	tuple[1]=tuple[1].replace("\"","");
