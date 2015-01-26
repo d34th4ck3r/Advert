@@ -22,14 +22,6 @@ import scala.Tuple2;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
-	/*	DatagramSocket serverSocket = new DatagramSocket(8060);
-		byte[] receiveData = new byte[1024];
-		while(true){
-		  DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		  serverSocket.receive(receivePacket);                   
-		  String sentence = new String( receivePacket.getData());                   
-		  System.out.println("RECEIVED: " + sentence);
-		}*/
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(1000));
 		JavaReceiverInputDStream<String> lines = jssc.receiverStream(new CustomReceiver("localhost",8060));
@@ -43,7 +35,7 @@ public class Main {
 					      
 					  }
 			});
-//		hash.print();
+		hash.print();
 		
 		JavaPairDStream<String, ArrayList<String>> tuple = hash.mapToPair(
 				new PairFunction<String,String,ArrayList<String>>(){
@@ -51,8 +43,10 @@ public class Main {
 					@Override
 					public Tuple2<String, ArrayList<String>> call(String arg0)
 							throws Exception {
+						arg0=StringUtils.trim(arg0);
 						arg0=StringUtils.removeStart(arg0, "{");
 				    	arg0=StringUtils.removeEnd(arg0, "}");
+				    	System.out.println("arg0: " + arg0);
 				    	String[] tuple = arg0.split(":");
 				    	tuple[0]=tuple[0].replace("\"","");
 				    	tuple[1]=tuple[1].replace("\"","");
@@ -79,82 +73,8 @@ public class Main {
 		
 		output.print();
 		jssc.start();
-		
-		
-		
-		
-	/*	JavaSparkContext sc = new JavaSparkContext(conf);
-		JavaRDD<String> lines = sc.textFile("/Users/gautambajaj/Documents/Advertisement/tokyo30m/addr");
-		final PositionCounter pC = new PositionCounter();
-		
-		ReverseHasher rH = new ReverseHasher();
-		JavaRDD<HashMap<String,ArrayList<String>>> lineLengths = lines.map(new Function<String, HashMap<String,ArrayList<String>>>() {
-			public HashMap<String,ArrayList<String>> call(String s) {
-				System.out.println(s);
-				return ReverseHasher.getReverseHash(s); }
-			
-		});
-		HashMap<String,ArrayList<String>> finalHash = lineLengths.reduce(new Function2<HashMap<String,ArrayList<String>>, HashMap<String,ArrayList<String>>, HashMap<String,ArrayList<String>>>(){
-
-			@Override
-			public HashMap<String,ArrayList<String>> call(HashMap<String,ArrayList<String>> arg0,
-					HashMap<String,ArrayList<String>> arg1) throws Exception {
-				// TODO Auto-generated method stub
-				HashMap<String,ArrayList<String>> merged= new HashMap<String,ArrayList<String>>();
-				merged.putAll(arg0);
-				merged.putAll(arg1);
-				return merged;
-			}});
-		*/
-	//	System.out.println(finalHash);
-		
-/*		JavaRDD<PositionCounter> lineLengths = lines.map(new Function<String, PositionCounter>() {
-			  public PositionCounter call(String s) {
-				  pC.addFile(s);
-				  return new PositionCounter(); }
-			});
-		PositionCounter totalLength = lineLengths.reduce(new Function2<PositionCounter, PositionCounter, PositionCounter>(){
-
-			@Override
-			public PositionCounter call(PositionCounter arg0,
-					PositionCounter arg1) throws Exception {
-				// TODO Auto-generated method stub
-				return null;
-			}});
-		
-		
-//		File folder = new File("/Users/gautambajaj/Documents/Advertisement/tokyo30m/");
-		pC.addFile("/Users/gautambajaj/Documents/Advertisement/tokyo30m/2014-10-09T08-45-43.429Z");
-		HashMap<String,Integer> count=pC.getCountForAllPair();
-		
-        ValueComparator bvc =  new ValueComparator(count);
-        TreeMap<String,Integer> sorted_map = new TreeMap<String,Integer>(bvc);
-        sorted_map.putAll(count);
-        for(Map.Entry<String, Integer> entry : sorted_map.entrySet()){
-			String journey=entry.getKey();
-			Integer val= entry.getValue();
-			System.out.println(journey+ " : "+val);
-		}
-        System.out.println(totalLength);
-	}
-	*/
 	}
 	
 }
 	
-	class ValueComparator implements Comparator<String> {
-
-	    Map<String, Integer> base;
-	    public ValueComparator(Map<String, Integer> base) {
-	        this.base = base;
-	    }
-
-	    // Note: this comparator imposes orderings that are inconsistent with equals.    
-	    public int compare(String a, String b) {
-	        if (base.get(a) <= base.get(b)) {
-	            return -1;
-	        } else {
-	            return 1;
-	        } // returning 0 would merge keys
-	    }
-	}
+	
