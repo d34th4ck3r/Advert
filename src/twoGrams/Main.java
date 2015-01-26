@@ -3,14 +3,11 @@ package twoGrams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.streaming.Duration;
@@ -25,17 +22,29 @@ import scala.Tuple2;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
-		SparkConf conf = new SparkConf().setMaster("local").setAppName("NetworkWordCount");
+	/*	DatagramSocket serverSocket = new DatagramSocket(8060);
+		byte[] receiveData = new byte[1024];
+		while(true){
+		  DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		  serverSocket.receive(receivePacket);                   
+		  String sentence = new String( receivePacket.getData());                   
+		  System.out.println("RECEIVED: " + sentence);
+		}*/
+		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(1000));
-		JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 8060);
-		final PackingData pD = new PackingData();
+		JavaReceiverInputDStream<String> lines = jssc.receiverStream(new CustomReceiver("localhost",8060));
+//		lines.print();
 		JavaDStream<String> hash = lines.flatMap(
 				  new FlatMapFunction<String, String>() {
 					    @Override public Iterable<String> call(String x) {
+					  //  	System.out.println(x);
 					    	String[] s=x.split("\\}\\{");
 					      return Arrays.asList(s);
+					      
 					  }
 			});
+//		hash.print();
+		
 		JavaPairDStream<String, ArrayList<String>> tuple = hash.mapToPair(
 				new PairFunction<String,String,ArrayList<String>>(){
 
