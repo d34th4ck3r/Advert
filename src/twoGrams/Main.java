@@ -65,13 +65,16 @@ public class Main {
 							ArrayList<String> arg1)  {
 						// TODO Auto-generated method stub
 						ArrayList<String> fin = new ArrayList<String>();
-						fin.addAll(arg1);
 						fin.addAll(arg0);
+						if(!arg0.get(arg0.size()-1).equals(arg1.get(0))){
+							fin.addAll(arg1);
+						}
 						return fin;
 					}	
 				});
 		
-		output.dstream().saveAsTextFiles("TEST", "GAME");
+		output.print();
+//		output.dstream().saveAsTextFiles("TEST", "GAME");
 		jssc.start();
 	}
 	
