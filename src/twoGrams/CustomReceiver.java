@@ -11,13 +11,12 @@ import org.apache.spark.streaming.receiver.Receiver;
 
 public class CustomReceiver extends Receiver<String> {
 
-	  String host = null;
 	  int port = -1;
 	  
 
-	  public CustomReceiver(String host_ , int port_) {
+	  public CustomReceiver(int port_) {
 	    super(StorageLevel.MEMORY_AND_DISK_2());
-	    host = host_;
+	    
 	    port = port_;
 	  }
 

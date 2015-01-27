@@ -2,20 +2,22 @@ package twoGrams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.rdd.RDD;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
+import scala.Function1;
 import scala.Tuple2;
 
 
@@ -23,8 +25,8 @@ public class Main {
 	
 	public static void main(String[] args) throws Exception {
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
-		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(1000));
-		JavaReceiverInputDStream<String> lines = jssc.receiverStream(new CustomReceiver("localhost",8060));
+		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(10000));
+		JavaReceiverInputDStream<String> lines = jssc.receiverStream(new CustomReceiver(8060));
 //		lines.print();
 		JavaDStream<String> hash = lines.flatMap(
 				  new FlatMapFunction<String, String>() {
@@ -69,7 +71,7 @@ public class Main {
 					}	
 				});
 		
-		output.print();
+		output.dstream().saveAsTextFiles("TEST", "GAME");
 		jssc.start();
 	}
 	
