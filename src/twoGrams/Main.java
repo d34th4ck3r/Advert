@@ -73,8 +73,8 @@ public class Main {
 					}	
 				});
 		
-		output.print();
-//		output.dstream().saveAsTextFiles("TEST", "GAME");
+//		output.print();
+		output.dstream().saveAsTextFiles("TEST", "GAME");
 		jssc.start();
 	}
 	
