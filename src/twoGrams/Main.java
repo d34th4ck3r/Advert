@@ -96,7 +96,10 @@ public class Main {
 											throws Exception {
 										
 										// TODO Auto-generated method stub
-										GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase( "/Users/gautambajaj/Documents/Advertisement/neo4j/data/" );	
+										GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("/dev/shm/Advertisement/data/")
+									            .setConfig("remote_shell_enabled", "true")
+									            .newGraphDatabase();	
+									            
 										try (Transaction tx = graphDb.beginTx()) {
 											while (arg0.hasNext()) {
 												Tuple2 < String, ArrayList < String >> tuple = arg0.next();
