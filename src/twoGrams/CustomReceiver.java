@@ -52,8 +52,6 @@ public class CustomReceiver extends Receiver<String> {
 
 	      // Until stopped or connection broken continue reading
 	      
-	      
-	//    	  System.out.println(userInput);
 	    	  store(userInput);
 	      }
 	      socket.close();
