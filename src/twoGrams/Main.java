@@ -41,10 +41,11 @@ public class Main {
 					  //  	System.out.println(x);
 					    	String[] s=x.split("\\}\\{");
 					      return Arrays.asList(s);
-					      
 					  }
 			});
-		
+		JavaDStream<Long> count = hash.count();
+		count.print();
+/*		
 		JavaPairDStream<String, ArrayList<String>> tuple = hash.mapToPair(
 				new PairFunction<String,String,ArrayList<String>>(){
 
@@ -79,7 +80,7 @@ public class Main {
 						return fin;
 					}	
 				});
-		final int count=1;
+		
 		output.foreachRDD(
 				new Function2<JavaPairRDD<String,ArrayList<String>>,Time,Void>(){
 					@Override
@@ -136,6 +137,7 @@ public class Main {
 						return null;
 					}
 				});
+				*/
 		jssc.start();
 	}	
 }
