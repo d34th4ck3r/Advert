@@ -43,9 +43,8 @@ public class Main {
 					      return Arrays.asList(s);
 					  }
 			});
-		JavaDStream<Long> count = hash.count();
-		count.print();
-/*		
+		
+		
 		JavaPairDStream<String, ArrayList<String>> tuple = hash.mapToPair(
 				new PairFunction<String,String,ArrayList<String>>(){
 
@@ -137,7 +136,7 @@ public class Main {
 						return null;
 					}
 				});
-				*/
+				
 		jssc.start();
 	}	
 }
