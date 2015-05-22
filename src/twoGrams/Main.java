@@ -11,6 +11,7 @@ import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.api.java.function.VoidFunction;
+import org.apache.spark.rdd.AsyncRDDActions;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.Time;
 import org.apache.spark.streaming.api.java.JavaDStream;
@@ -32,7 +33,7 @@ public class Main {
 		SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, new Duration(10000));
 		JavaReceiverInputDStream<String> lines = jssc.receiverStream(new CustomReceiver(8060));
-	
+		
 //		final Neo4jOperations nO = new Neo4jOperations("/Users/gautambajaj/Documents/Advertisement/neo4j/data" );
 		
 		JavaDStream<String> hash = lines.flatMap(
@@ -79,7 +80,7 @@ public class Main {
 						return fin;
 					}	
 				});
-		
+
 		output.foreachRDD(
 				new Function2<JavaPairRDD<String,ArrayList<String>>,Time,Void>(){
 					@Override
@@ -96,9 +97,7 @@ public class Main {
 											throws Exception {
 										
 										// TODO Auto-generated method stub
-										GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("/dev/shm/Advertisement/data/")
-									            .setConfig("remote_shell_enabled", "true")
-									            .newGraphDatabase();	
+										GraphDatabaseService graphDb = JavaNeo4jGraphDatabaseServiceSingleton.getInstance("/Users/gautambajaj/Documents/Advertisement/neo4j/data");
 									            
 										try (Transaction tx = graphDb.beginTx()) {
 											while (arg0.hasNext()) {
@@ -130,8 +129,7 @@ public class Main {
 											}
 											tx.success();
 										}
-										graphDb.shutdown();
-									}				
+									}
 						});
 						return null;
 					}
@@ -139,4 +137,17 @@ public class Main {
 				
 		jssc.start();
 	}	
+}
+
+class JavaNeo4jGraphDatabaseServiceSingleton{
+	static private transient GraphDatabaseService graphDb=null;
+	static public GraphDatabaseService getInstance(String path){
+		if(graphDb==null){
+			graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(path)
+		            .setConfig("remote_shell_enabled", "true")
+		            .newGraphDatabase();
+			return graphDb;
+		}
+		return graphDb;
+	}
 }
